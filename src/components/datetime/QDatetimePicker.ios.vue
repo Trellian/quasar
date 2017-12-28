@@ -11,6 +11,7 @@
             <div ref="month" class="q-datetime-col-wrapper" :style="__monthStyle">
               <div
                 v-for="index in monthInterval"
+                :key="`mi${index}`"
                 class="q-datetime-item"
               >
                 {{ $q.i18n.date.months[index + monthMin - 1] }}
@@ -25,6 +26,7 @@
             <div ref="date" class="q-datetime-col-wrapper" :style="__dayStyle">
               <div
                 v-for="index in daysInterval"
+                :key="`di${index}`"
                 class="q-datetime-item"
               >
                 {{ index + dayMin - 1 }}
@@ -39,6 +41,7 @@
             <div ref="year" class="q-datetime-col-wrapper" :style="__yearStyle">
               <div
                 v-for="n in yearInterval"
+                :key="`yi${n}`"
                 class="q-datetime-item"
               >
                 {{ n + yearMin }}
@@ -55,6 +58,7 @@
             <div ref="hour" class="q-datetime-col-wrapper" :style="__hourStyle">
               <div
                 v-for="n in hourInterval"
+                :key="`hi${n}`"
                 class="q-datetime-item"
               >
                 {{ n + hourMin - 1 }}
@@ -69,6 +73,7 @@
             <div ref="minute" class="q-datetime-col-wrapper" :style="__minuteStyle">
               <div
                 v-for="n in minuteInterval"
+                :key="`ni${n}`"
                 class="q-datetime-item"
               >
                 {{ __pad(n + minuteMin - 1) }}
@@ -86,14 +91,14 @@
 
 <script>
 import { between, capitalize } from '../../utils/format'
-import { position } from '../../utils/event'
+import { position, stopAndPrevent } from '../../utils/event'
 import { css } from '../../utils/dom'
 import { isSameDate, adjustDate } from '../../utils/date'
 import DateMixin from './datetime-mixin'
 import TouchPan from '../../directives/touch-pan'
 
 export default {
-  name: 'q-inline-datetime',
+  name: 'q-datetime-picker',
   mixins: [DateMixin],
   directives: {
     TouchPan
@@ -218,10 +223,13 @@ export default {
       }
     },
 
+    setView () {},
+
     /* helpers */
     __pad (unit, filler) {
       return (unit < 10 ? filler || '0' : '') + unit
     },
+    __scrollView () {},
     __updateAllPositions () {
       this.$nextTick(() => {
         if (this.typeHasDate) {
@@ -278,8 +286,7 @@ export default {
         return
       }
 
-      ev.stopPropagation()
-      ev.preventDefault()
+      stopAndPrevent(ev)
 
       this[type + 'DragOffset'] = 0
       this.dragging = type
@@ -292,8 +299,7 @@ export default {
         return
       }
 
-      ev.stopPropagation()
-      ev.preventDefault()
+      stopAndPrevent(ev)
 
       const offset = (this.__dragPosition - position(ev).top) / 36
       this[type + 'DragOffset'] = offset
@@ -303,8 +309,7 @@ export default {
       if (this.dragging !== type || !this.editable) {
         return
       }
-      ev.stopPropagation()
-      ev.preventDefault()
+      stopAndPrevent(ev)
       this.dragging = false
 
       let

@@ -1,6 +1,10 @@
 import Ripple from '../../directives/ripple'
 import { QIcon } from '../icon'
 
+const sizes = {
+  xs: 8, sm: 10, md: 14, lg: 20, xl: 24
+}
+
 export default {
   components: {
     QIcon
@@ -20,19 +24,31 @@ export default {
     flat: Boolean,
     rounded: Boolean,
     push: Boolean,
-    small: Boolean,
-    big: Boolean,
+    size: String,
+    fab: Boolean,
+    fabMini: Boolean,
     color: String,
+    textColor: String,
     glossy: Boolean,
-    compact: Boolean,
+    dense: Boolean,
     noRipple: Boolean
   },
   computed: {
-    size () {
-      return `q-btn-${this.small ? 'small' : (this.big ? 'big' : 'standard')}`
+    style () {
+      if (this.size && !this.fab && !this.fabMini) {
+        return {
+          fontSize: this.size in sizes ? `${sizes[this.size]}px` : this.size
+        }
+      }
+    },
+    isRectangle () {
+      return !this.isRound
+    },
+    isRound () {
+      return this.round || this.fab || this.fabMini
     },
     shape () {
-      return `q-btn-${this.round ? 'round' : 'rectangle'}`
+      return `q-btn-${this.isRound ? 'round' : 'rectangle'}`
     },
     isDisabled () {
       return this.disable || this.loading
@@ -42,14 +58,14 @@ export default {
     },
     classes () {
       const
-        cls = [this.shape, this.size],
+        cls = [ this.shape ],
         color = this.toggled ? this.toggleColor : this.color
 
-      if (this.toggled) {
-        cls.push('q-btn-toggle-active')
+      if (this.fab) {
+        cls.push('q-btn-fab')
       }
-      if (this.compact) {
-        cls.push('q-btn-compact')
+      else if (this.fabMini) {
+        cls.push('q-btn-fab-mini')
       }
 
       if (this.flat) {
@@ -62,22 +78,40 @@ export default {
         cls.push('q-btn-push')
       }
 
-      this.isDisabled && cls.push('disabled')
-      this.noCaps && cls.push('q-btn-no-uppercase')
-      this.rounded && cls.push('q-btn-rounded')
-      this.glossy && cls.push('glossy')
+      if (this.isDisabled) {
+        cls.push('disabled')
+      }
+      else {
+        cls.push('q-focusable q-hoverable')
+      }
 
       if (color) {
         if (this.flat || this.outline) {
-          cls.push(`text-${color}`)
+          cls.push(`text-${this.textColor || color}`)
         }
         else {
           cls.push(`bg-${color}`)
-          cls.push(`text-white`)
+          cls.push(`text-${this.textColor || 'white'}`)
         }
       }
 
+      cls.push({
+        'q-btn-no-uppercase': this.noCaps,
+        'q-btn-rounded': this.rounded,
+        'q-btn-dense': this.dense,
+        'q-btn-toggle-active': this.toggled,
+        'glossy': this.glossy
+      })
+
       return cls
+    }
+  },
+  methods: {
+    removeFocus (e) {
+      // if is touch enabled and focus was received from pointer
+      if (this.$q.platform.has.touch && e.detail) {
+        this.$el.blur()
+      }
     }
   }
 }

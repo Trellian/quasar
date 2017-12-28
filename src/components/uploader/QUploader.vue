@@ -12,12 +12,15 @@
       :stack-label="stackLabel"
       :float-label="floatLabel"
       :error="error"
+      :warning="warning"
       :disable="disable"
+      :inverted="inverted"
+      :dark="dark"
+      :hide-underline="hideUnderline"
       :before="before"
       :after="after"
       :color="color"
       :align="align"
-      :inverted="inverted"
 
       :length="queueLength"
       additional-length
@@ -39,7 +42,7 @@
         slot="after"
         class="q-if-control"
         :name="$q.icon.uploader.clear"
-        @click="abort"
+        @click.native="abort"
       ></q-icon>
 
       <q-icon
@@ -47,7 +50,7 @@
         slot="after"
         :name="$q.icon.uploader.add"
         class="q-uploader-pick-button q-if-control relative-position overflow-hidden"
-        @click="__pick"
+        @click.native="__pick"
         :disabled="addDisabled"
       >
         <input
@@ -66,7 +69,7 @@
         :name="$q.icon.uploader.upload"
         class="q-if-control"
         :disabled="queueLength === 0"
-        @click="upload"
+        @click.native="upload"
       ></q-icon>
 
       <q-icon
@@ -75,7 +78,7 @@
         :name="$q.icon.uploader.expand"
         class="q-if-control generic_transition"
         :class="{'rotate-180': expanded}"
-        @click="expanded = !expanded"
+        @click.native="expanded = !expanded"
       ></q-icon>
     </q-input-frame>
 
@@ -106,7 +109,7 @@
                 :icon="$q.icon.uploader[file.__doneUploading ? 'done' : 'clear']"
                 :color="color"
                 class="cursor-pointer"
-                @click="__remove(file)"
+                @click.native="__remove(file)"
               ></q-item-tile>
             </q-item-side>
           </q-item>
@@ -410,6 +413,11 @@ export default {
           }
         })
       })
+    },
+    pick () {
+      if (!this.addDisabled) {
+        this.$refs.file.click()
+      }
     },
     upload () {
       const length = this.queueLength

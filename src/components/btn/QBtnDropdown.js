@@ -40,7 +40,7 @@ export default {
         'q-icon',
         {
           props: {
-            name: this.$q.icon.btn.dropdown
+            name: this.$q.icon.input.dropdown
           },
           staticClass: 'transition-generic',
           'class': {
@@ -63,16 +63,14 @@ export default {
             icon: this.icon,
             label: this.label,
             iconRight: this.split ? this.iconRight : null,
-            round: this.round,
             outline: this.outline,
             flat: this.flat,
             rounded: this.rounded,
             push: this.push,
-            small: this.small,
-            big: this.big,
+            size: this.size,
             color: this.color,
             glossy: this.glossy,
-            compact: this.compact,
+            dense: this.dense,
             noRipple: this.noRipple,
             waitForRipple: this.waitForRipple
           },
@@ -112,13 +110,12 @@ export default {
           QBtn,
           {
             props: {
-              round: this.round,
               flat: this.flat,
               rounded: this.rounded,
               push: this.push,
-              small: this.small,
-              big: this.big,
+              size: this.size,
               color: this.color,
+              dense: this.dense,
               glossy: this.glossy,
               noRipple: this.noRipple,
               waitForRipple: this.waitForRipple

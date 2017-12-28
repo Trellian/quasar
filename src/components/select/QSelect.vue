@@ -8,9 +8,11 @@
     :stack-label="stackLabel"
     :float-label="floatLabel"
     :error="error"
+    :warning="warning"
     :disable="disable"
     :inverted="inverted"
     :dark="dark"
+    :hide-underline="hideUnderline"
     :before="before"
     :after="after"
     :color="frameColor || color"
@@ -54,9 +56,9 @@
       slot="after"
       name="cancel"
       class="q-if-control"
-      @click.stop="clear"
-    ></q-icon>
-    <q-icon slot="after" :name="$q.icon.select.dropdown" class="q-if-control"></q-icon>
+      @click.stop.native="clear"
+    />
+    <q-icon slot="after" :name="$q.icon.input.dropdown" class="q-if-control" />
 
     <q-popover
       ref="popover"
@@ -80,7 +82,7 @@
           icon="filter_list"
           class="no-margin"
           style="min-height: 50px; padding: 10px;"
-        ></q-search>
+        />
       </q-field-reset>
 
       <q-list
@@ -95,7 +97,7 @@
             :link="!opt.disable"
             :class="{'text-faded': opt.disable}"
             slot-replace
-            @click.capture="__toggleMultiple(opt.value, opt.disable)"
+            @click.capture.native="__toggleMultiple(opt.value, opt.disable)"
           >
             <q-toggle
               v-if="toggle"
@@ -103,14 +105,16 @@
               :color="color"
               :value="optModel[opt.index]"
               :disable="opt.disable"
-            ></q-toggle>
+              no-focus
+            />
             <q-checkbox
               v-else
               slot="left"
               :color="color"
               :value="optModel[opt.index]"
               :disable="opt.disable"
-            ></q-checkbox>
+              no-focus
+            />
           </q-item-wrapper>
         </template>
         <template v-else>
@@ -122,7 +126,7 @@
             :class="{'text-faded': opt.disable}"
             slot-replace
             :active="value === opt.value"
-            @click.capture="__singleSelect(opt.value, opt.disable)"
+            @click.capture.native="__singleSelect(opt.value, opt.disable)"
           >
             <q-radio
               v-if="radio"
@@ -131,7 +135,8 @@
               :value="value"
               :val="opt.value"
               :disable="opt.disable"
-            ></q-radio>
+              no-focus
+            />
           </q-item-wrapper>
         </template>
       </q-list>
@@ -148,7 +153,7 @@ import { QCheckbox } from '../checkbox'
 import { QRadio } from '../radio'
 import { QToggle } from '../toggle'
 import SelectMixin from '../../mixins/select'
-import clone from '../../utils/clone'
+import extend from '../../utils/extend'
 
 function defaultFilterFn (terms, obj) {
   return obj.label.toLowerCase().indexOf(terms) > -1
@@ -184,11 +189,7 @@ export default {
       }
     },
     visibleOptions () {
-      let opts = clone(this.options).map((opt, index) => {
-        opt.index = index
-        opt.value = this.options[index].value
-        return opt
-      })
+      let opts = this.options.map((opt, index) => extend({}, opt, { index }))
       if (this.filter && this.terms.length) {
         const lowerTerms = this.terms.toLowerCase()
         opts = opts.filter(opt => this.filterFn(lowerTerms, opt))
@@ -211,9 +212,6 @@ export default {
       this[this.$refs.popover.showing ? 'hide' : 'show']()
     },
     show () {
-      if (this.disable) {
-        return Promise.reject(new Error())
-      }
       return this.$refs.popover.show()
     },
     hide () {
@@ -250,9 +248,7 @@ export default {
       this.focused = false
       this.$emit('blur')
       this.terms = ''
-      if (JSON.stringify(this.model) !== JSON.stringify(this.value)) {
-        this.$emit('change', this.model)
-      }
+      this.$emit('change', this.model)
     },
     __singleSelect (val, disable) {
       if (disable) {

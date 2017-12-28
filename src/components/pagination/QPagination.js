@@ -22,6 +22,7 @@ export default {
       type: String,
       default: 'primary'
     },
+    size: String,
     disable: Boolean,
     input: Boolean,
     boundaryLinks: {
@@ -77,8 +78,8 @@ export default {
         const model = between(parseInt(value, 10), this.min, this.max)
         if (this.value !== model) {
           this.$emit('input', model)
-          this.$emit('change', model)
         }
+        this.$emit('change', model)
       }
     },
     inputPlaceholder () {
@@ -121,7 +122,7 @@ export default {
         props: {
           color: this.color,
           flat: true,
-          compact: true
+          size: this.size
         }
       }, props))
     }
@@ -182,7 +183,7 @@ export default {
 
     if (this.input) {
       contentMiddle.push(h(QInput, {
-        staticClass: 'inline no-margin',
+        staticClass: 'inline no-margin no-padding',
         style: {
           width: `${this.inputPlaceholder.length}rem`
         },
@@ -194,7 +195,8 @@ export default {
           max: this.max,
           color: this.color,
           placeholder: this.inputPlaceholder,
-          disable: this.disable
+          disable: this.disable,
+          hideUnderline: true
         },
         on: {
           input: value => (this.newPage = value),

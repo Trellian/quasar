@@ -17,7 +17,7 @@
       :loader="loader"
     >
       <template slot="top-right" slot-scope="props">
-        <q-search v-model="filter" />
+        <q-search hide-underline v-model="filter" />
       </template>
     </q-table>
 
@@ -86,8 +86,8 @@
       color="primary"
     >
       <template slot="top" slot-scope="props">
-        <q-btn flat color="primary" icon="add" label="Add row" />
-        <q-btn class="on-right" flat color="primary" icon="refresh" label="Refresh" />
+        <q-btn flat dense color="primary" icon="add" label="Add row" />
+        <q-btn class="on-right" flat dense color="primary" icon="refresh" label="Refresh" />
       </template>
     </q-table>
 
@@ -101,16 +101,16 @@
       color="primary"
     >
       <template slot="top-right" slot-scope="props">
-        <q-search color="primary" v-model="filter" />
+        <q-search hide-underline color="primary" v-model="filter" />
         <q-table-columns color="primary" class="on-right" v-model="visibleColumns" :columns="columns" />
-        <q-btn color="primary" flat round small icon="more_vert" class="on-right">
+        <q-btn color="primary" flat round size="sm" icon="more_vert" class="on-right">
           <q-popover ref="popover">
             <q-list link>
-              <q-item @click="$refs.popover.hide()">
+              <q-item @click.native="$refs.popover.hide()">
                 <q-item-side icon="map" />
                 <q-item-main label="View map" />
               </q-item>
-              <q-item @click="$refs.popover.hide()">
+              <q-item @click.native="$refs.popover.hide()">
                 <q-item-side icon="add" />
                 <q-item-main label="Create new table" />
               </q-item>
@@ -236,7 +236,7 @@
         <q-btn color="secondary" flat label="Action 1" />
         <q-btn color="secondary" flat label="Action 2" />
         <div class="col"></div>
-        <q-btn color="negative" flat round small icon="delete" />
+        <q-btn color="negative" flat round size="sm" icon="delete" />
       </template>
     </q-table>
   </div>

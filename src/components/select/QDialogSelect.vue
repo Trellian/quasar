@@ -8,9 +8,11 @@
     :stack-label="stackLabel"
     :float-label="floatLabel"
     :error="error"
+    :warning="warning"
     :disable="disable"
     :inverted="inverted"
     :dark="dark"
+    :hide-underline="hideUnderline"
     :before="before"
     :after="after"
     :color="frameColor || color"
@@ -54,14 +56,13 @@
       slot="after"
       name="cancel"
       class="q-if-control"
-      @click.stop="clear"
+      @click.stop.native="clear"
     ></q-icon>
-    <q-icon slot="after" :name="$q.icon.select.dropdown" class="q-if-control"></q-icon>
+    <q-icon slot="after" :name="$q.icon.input.dropdown" class="q-if-control"></q-icon>
   </q-input-frame>
 </template>
 
 <script>
-import clone from '../../utils/clone'
 import SelectMixin from '../../mixins/select'
 
 export default {
@@ -101,7 +102,9 @@ export default {
         color: this.color,
         options: {
           type: this.type,
-          model: clone(this.value),
+          model: this.multiple && Array.isArray(this.value)
+            ? this.value.slice()
+            : this.value,
           items: this.options
         },
         cancel: this.cancelLabel || true,

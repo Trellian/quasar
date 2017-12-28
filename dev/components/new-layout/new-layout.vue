@@ -3,20 +3,20 @@
   <q-layout :view="view" @scroll="onScroll">
     <q-layout-header v-model="header" :reveal="headerReveal">
       <q-toolbar>
-        <q-btn flat icon="menu" @click="left = !left" />
+        <q-btn flat round dense icon="menu" @click="left = !left" />
         <q-toolbar-title>
           Header
           <span slot="subtitle">The Subtiiiitleeee</span>
         </q-toolbar-title>
-        <q-btn flat icon="menu" @click="right = !right" />
+        <q-btn flat round dense icon="menu" @click="right = !right" />
       </q-toolbar>
       <q-toolbar>
-        <q-btn flat icon="menu" @click="left = !left" />
+        <q-btn flat round dense icon="menu" @click="left = !left" />
         <q-toolbar-title>
           Header
           <span slot="subtitle">The Subtiiiitleeee</span>
         </q-toolbar-title>
-        <q-btn flat icon="menu" @click="right = !right" />
+        <q-btn flat round dense icon="menu" @click="right = !right" />
       </q-toolbar>
       <q-tabs>
         <q-route-tab slot="title" icon="view_quilt" to="/layout-quick/default" replace hide="icon" label="Default" />
@@ -28,18 +28,18 @@
 
     <q-layout-footer v-model="footer" :reveal="footerReveal">
       <q-toolbar>
-        <q-btn flat icon="menu" @click="left = !left" />
+        <q-btn flat round dense icon="menu" @click="left = !left" />
         <q-toolbar-title>
           Footer
         </q-toolbar-title>
-        <q-btn flat icon="menu" @click="right = !right" />
+        <q-btn flat round dense icon="menu" @click="right = !right" />
       </q-toolbar>
       <q-toolbar>
-        <q-btn flat icon="menu" @click="left = !left" />
+        <q-btn flat round dense icon="menu" @click="left = !left" />
         <q-toolbar-title>
           Footer
         </q-toolbar-title>
-        <q-btn flat icon="menu" @click="right = !right" />
+        <q-btn flat round dense icon="menu" @click="right = !right" />
       </q-toolbar>
     </q-layout-footer>
 
@@ -54,7 +54,7 @@
         <q-btn @click="$router.replace('/layout-quick/a')">Replace Go to A</q-btn>
         <q-btn @click="$router.replace('/layout-quick/b')">Replace Go to B</q-btn>
         <q-btn @click="$router.replace('/layout-quick/c')">Replace Go to C</q-btn>
-        <div v-for="n in 60">{{n}} Left drawer</div>
+        <div v-for="n in 60" :key="n">{{n}} Left drawer</div>
       </q-scroll-area>
     </q-layout-drawer>
 
@@ -70,7 +70,7 @@
           <q-btn @click="$router.replace('/layout-quick/a')">Replace Go to A</q-btn>
           <q-btn @click="$router.replace('/layout-quick/b')">Replace Go to B</q-btn>
           <q-btn @click="$router.replace('/layout-quick/c')">Replace Go to C</q-btn>
-          <div v-for="n in 60">{{n}} Right drawer</div>
+          <div v-for="n in 60" :key="n">{{n}} Right drawer</div>
         </div>
       </q-layout-drawer>
 

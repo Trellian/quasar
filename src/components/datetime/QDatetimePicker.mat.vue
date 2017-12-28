@@ -70,7 +70,7 @@
         >
           <q-btn
             v-for="n in yearInterval"
-            :key="n"
+            :key="`yi${n}`"
             flat
             class="q-datetime-btn full-width"
             :class="{active: n + yearMin === year}"
@@ -86,7 +86,7 @@
         >
           <q-btn
             v-for="index in monthInterval"
-            :key="index"
+            :key="`mi${index}`"
             flat
             class="q-datetime-btn full-width"
             :class="{active: month === index + monthMin}"
@@ -103,7 +103,7 @@
           <div class="row items-center content-center">
             <q-btn
               round
-              small
+              dense
               flat
               :color="color"
               @click="setMonth(month - 1)"
@@ -116,7 +116,7 @@
             </div>
             <q-btn
               round
-              small
+              dense
               flat
               :color="color"
               @click="setMonth(month + 1)"
@@ -126,15 +126,18 @@
             ></q-btn>
           </div>
           <div class="q-datetime-weekdays row items-center justify-start">
-            <div v-for="day in headerDayNames">{{day}}</div>
+            <div v-for="day in headerDayNames" :key="`dh${day}`">{{day}}</div>
           </div>
           <div class="q-datetime-days row wrap items-center justify-start content-center">
-            <div v-for="fillerDay in fillerDays" class="q-datetime-fillerday"></div>
-            <div v-if="min" v-for="fillerDay in beforeMinDays" class="row items-center content-center justify-center disabled">
-              {{ fillerDay }}
-            </div>
+            <div v-for="fillerDay in fillerDays" :key="`fd${fillerDay}`" class="q-datetime-fillerday"></div>
+            <template v-if="min">
+              <div v-for="fillerDay in beforeMinDays" :key="`fb${fillerDay}`" class="row items-center content-center justify-center disabled">
+                {{ fillerDay }}
+              </div>
+            </template>
             <div
               v-for="monthDay in daysInterval"
+              :key="`md${monthDay}`"
               class="row items-center content-center justify-center cursor-pointer"
               :class="{
                 'q-datetime-day-active': monthDay === day,
@@ -144,9 +147,11 @@
             >
               <span>{{ monthDay }}</span>
             </div>
-            <div v-if="max" v-for="fillerDay in afterMaxDays" class="row items-center content-center justify-center disabled">
-              {{ fillerDay + maxDay }}
-            </div>
+            <template v-if="max">
+              <div v-for="fillerDay in afterMaxDays" :key="`fa${fillerDay}`" class="row items-center content-center justify-center disabled">
+                {{ fillerDay + maxDay }}
+              </div>
+            </template>
           </div>
         </div>
 
@@ -173,6 +178,7 @@
               <div v-if="computedFormat24h">
                 <div
                   v-for="n in 24"
+                  :key="`hi${n}`"
                   class="q-datetime-clock-position fmt24"
                   :class="[`q-datetime-clock-pos-${n-1}`, (n - 1) === hour ? 'active' : '']"
                 >
@@ -182,6 +188,7 @@
               <div v-else>
                 <div
                   v-for="n in 12"
+                  :key="`hi${n}`"
                   class="q-datetime-clock-position"
                   :class="['q-datetime-clock-pos-' + n, n === hour ? 'active' : '']"
                 >
@@ -208,6 +215,7 @@
               </div>
               <div
                 v-for="n in 12"
+                :key="`mi${n}`"
                 class="q-datetime-clock-position"
                 :class="['q-datetime-clock-pos-' + (n - 1), (n - 1) * 5 === minute ? 'active' : '']"
               >
@@ -225,7 +233,7 @@
 
 <script>
 import { height, width, offset, cssTransform } from '../../utils/dom'
-import { position } from '../../utils/event'
+import { position, stopAndPrevent } from '../../utils/event'
 import { QBtn } from '../btn'
 import { isSameDate, adjustDate } from '../../utils/date'
 import DateMixin from './datetime-mixin'
@@ -236,7 +244,7 @@ function convertToAmPm (hour) {
 }
 
 export default {
-  name: 'q-inline-datetime',
+  name: 'q-datetime-picker',
   mixins: [DateMixin],
   props: {
     defaultSelection: [String, Number, Date],
@@ -250,20 +258,8 @@ export default {
     Ripple
   },
   data () {
-    let view
-
-    switch (this.type) {
-      case 'time':
-        view = 'hour'
-        break
-      case 'date':
-      default:
-        view = 'day'
-        break
-    }
-
     return {
-      view,
+      view: this.__calcView(this.defaultView),
       dragging: false,
       centerClockPos: 0
     }
@@ -274,18 +270,8 @@ export default {
         this.view = ['date', 'datetime'].includes(this.type) ? 'day' : 'hour'
       }
     },
-    view (value) {
-      if (value !== 'year' && value !== 'month') {
-        return
-      }
-
-      let
-        view = this.$refs.selector,
-        rows = value === 'year' ? this.year - this.yearMin : this.month - this.monthMin
-
-      this.$nextTick(() => {
-        view.scrollTop = rows * height(view.children[0].children[0]) - height(view) / 2.5
-      })
+    view () {
+      this.__scrollView()
     }
   },
   computed: {
@@ -408,6 +394,7 @@ export default {
     setDay (value) {
       if (this.editable) {
         this.model = new Date(this.model.setDate(this.__parseTypeValue('date', value)))
+        this.$emit('canClose')
       }
     },
 
@@ -432,13 +419,39 @@ export default {
       this.model = new Date(this.model.setMinutes(this.__parseTypeValue('minute', value)))
     },
 
+    setView (view) {
+      this.view = this.__calcView(view)
+    },
+
     /* helpers */
+    __calcView (view) {
+      switch (this.type) {
+        case 'time':
+          return ['hour', 'minute'].includes(view) ? view : 'hour'
+        case 'date':
+          return ['year', 'month', 'day'].includes(view) ? view : 'day'
+        default:
+          return ['year', 'month', 'day', 'hour', 'minute'].includes(view) ? view : 'day'
+      }
+    },
     __pad (unit, filler) {
       return (unit < 10 ? filler || '0' : '') + unit
     },
+    __scrollView () {
+      if (this.view !== 'year' && this.view !== 'month') {
+        return
+      }
+
+      let
+        el = this.$refs.selector,
+        rows = this.view === 'year' ? this.year - this.yearMin : this.month - this.monthMin
+
+      this.$nextTick(() => {
+        el.scrollTop = rows * height(el.children[0].children[0]) - height(el) / 2.5
+      })
+    },
     __dragStart (ev) {
-      ev.stopPropagation()
-      ev.preventDefault()
+      stopAndPrevent(ev)
 
       let
         clock = this.$refs.clock,
@@ -456,15 +469,18 @@ export default {
       if (!this.dragging) {
         return
       }
-      ev.stopPropagation()
-      ev.preventDefault()
+      stopAndPrevent(ev)
       this.__updateClock(ev)
     },
     __dragStop (ev) {
-      ev.stopPropagation()
-      ev.preventDefault()
+      stopAndPrevent(ev)
       this.dragging = false
-      this.view = 'minute'
+      if (this.view === 'minute') {
+        this.$emit('canClose')
+      }
+      else {
+        this.view = 'minute'
+      }
     },
     __updateClock (ev) {
       let
@@ -493,6 +509,9 @@ export default {
     __getRepeatEasing (from = 300, step = 10, to = 100) {
       return cnt => cnt ? Math.max(to, from - cnt * cnt * step) : 100
     }
+  },
+  mounted () {
+    this.__scrollView()
   }
 }
 </script>

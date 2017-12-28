@@ -1,6 +1,6 @@
 export default {
   props: {
-    autofocus: Boolean,
+    autofocus: [Boolean, String],
     name: String,
     maxLength: [Number, String],
     maxHeight: Number,
@@ -51,8 +51,8 @@ export default {
       let model = this.isNumber && this.isNumberError ? null : this.model
       if (JSON.stringify(model) !== JSON.stringify(this.value)) {
         this.$emit('input', model)
-        this.$emit('change', model)
       }
+      this.$emit('change', model)
     },
     __onKeydown (e) {
       this.$emit('keydown', e)
@@ -70,6 +70,9 @@ export default {
       const input = this.$refs.input
       if (this.autofocus && input) {
         input.focus()
+        if (this.autofocus === 'select') {
+          input.select()
+        }
       }
     })
   },

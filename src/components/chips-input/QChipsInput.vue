@@ -7,9 +7,11 @@
     :stack-label="stackLabel"
     :float-label="floatLabel"
     :error="error"
+    :warning="warning"
     :disable="disable"
     :inverted="inverted"
     :dark="dark"
+    :hide-underline="hideUnderline"
     :before="before"
     :after="after"
     :color="inverted ? frameColor || color : color"
@@ -131,6 +133,7 @@ export default {
     __handleKey (e) {
       // ENTER key
       if (e.which === 13 || e.keyCode === 13) {
+        e.preventDefault()
         this.add()
       }
       // Backspace key

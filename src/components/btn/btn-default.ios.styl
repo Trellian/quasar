@@ -1,9 +1,3 @@
-button-round-factor($size)
-  if $size == 'small'
-    .54
-  else
-    .47
-
 .q-btn
   display inline-flex
   align-items center
@@ -11,13 +5,21 @@ button-round-factor($size)
   outline 0
   border 0
   vertical-align middle
+  vertical-align -webkit-baseline-middle
   cursor pointer
   -webkit-appearance button
   padding $button-padding
+  font-size $button-font-size
   text-decoration none
   color inherit
   background transparent
   transition $button-transition
+  min-height 2.572em
+  .q-icon
+    font-size 1.4em
+  .q-spinner
+    height 1.4em
+    width 1.4em
 
   &.disabled
     opacity .7 !important
@@ -51,28 +53,29 @@ button-round-factor($size)
 .q-btn-round
   border-radius 50%
   padding 0
+  min-height 0
+  height 3em
+  width 3em
 
-for $name, $size in $button-sizes
-  .q-btn-{$name}
-    min-height $size
-    font-size round($size * .38)
-    .q-icon
-      font-size round($size * .68)
-    .q-spinner
-      height round($size * .68)
-      width round($size * .68)
-for $name, $size in $button-round-sizes
-  .q-btn-round.q-btn-{$name}
-    height $size
-    width $size
-    .q-icon, .q-spinner
-      height round(button-round-factor($name) * $size)
-      width round(button-round-factor($name) * $size)
-      font-size round(button-round-factor($name) * $size)
-
-.q-btn-compact
-  padding 2px 6px
+.q-btn-dense
+  padding $button-dense-padding
+  min-height 0
+  &.q-btn-round
+    padding 0
+    height 2.4em
+    width 2.4em
   .on-left
     margin-right 6px
   .on-right
     margin-left 6px
+
+
+.q-btn-fab, .q-btn-fab-mini
+  .q-icon
+    font-size 24px
+.q-btn-fab
+  height 56px
+  width 56px
+.q-btn-fab-mini
+  height 40px
+  width 40px

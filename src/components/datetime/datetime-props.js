@@ -38,14 +38,21 @@ export const inline = {
     type: [Boolean, Number],
     default: 0,
     validator: v => [true, false, 0].includes(v)
+  },
+  defaultView: {
+    type: String,
+    validator: v => ['year', 'month', 'day', 'hour', 'minute'].includes(v)
   }
 }
 
 export const input = {
   format: String,
-  noClear: Boolean,
   placeholder: String,
-  clearLabel: String,
+  clearable: Boolean,
   okLabel: String,
-  cancelLabel: String
+  cancelLabel: String,
+  defaultSelection: [String, Number, Date],
+  displayValue: String,
+  disable: Boolean,
+  readonly: Boolean
 }
